@@ -16,6 +16,9 @@ enum Token {
 static std::string IdentifierStr; // Filled in if tok_identifier
 static double NumVal;             // Filled in if tok_number
 
+/// gettok - Return the next token from standard input
+static int gettok() { return 0; }
+
 int main() {
 
   fprintf(stderr, "ready> ");
