@@ -14,7 +14,10 @@ type
       TOK_DEF = -2,
       // EOF
       TOK_EOF = -1,
-      TOK_BASE = 0
+      // start me up
+      TOK_BASE = 0,
+      // oh, no!
+      TOK_ERROR = 1
   );
 
 (* ******************** *)
@@ -42,19 +45,18 @@ begin
       read(lastChar);
     end;
 
-    if identifierStr = 'def' then
-      exit(TOK_DEF);
-
-    if identifierStr = 'extern' then
-      exit(TOK_EXTERN);
-
-    exit(TOK_IDENTIFIER);
+    case identifierStr of
+      'def': exit(TOK_DEF);
+      'extern': exit(TOK_EXTERN);
+      otherwise exit(TOK_IDENTIFIER)
+    end;
   end;
 
   if Eof then
     exit(TOK_EOF);
 
-  exit(TOK_EOF);
+  // Whacha talkin about Willis?
+  exit(TOK_ERROR);
 end;
 
 (* ******************** *)
