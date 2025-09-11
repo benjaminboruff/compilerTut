@@ -1,1 +1,4 @@
-program AST;
+unit ast;
+interface
+implementation
+end.
