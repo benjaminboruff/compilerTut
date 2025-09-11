@@ -2,7 +2,8 @@ program Lexer;
 
 uses
   Character,
-  SysUtils;
+  SysUtils,
+  TypInfo;
 (* ********************* *)
 // TYPES
 // The lexer returns tokens [0-255]
@@ -29,17 +30,18 @@ type
 var
   identifierStr: string = '';
   numVal: double = 0;
-  token: TToken = TOK_BASE;
+  token: integer = ord(TOK_BASE);
 
 (* ******************** *)
 // FUNCTIONS
 // gettok - Return the next token
 // from standard input
-function gettok: TToken;
+function gettok: integer;
 
 var
   lastChar: char = ' ';
   numStr: string = '';
+  thisChar: char = ' ';
 
 begin
   // Skip any whitespace
@@ -57,9 +59,9 @@ begin
     end;
 
     case identifierStr of
-      'def': exit(TOK_DEF);
-      'extern': exit(TOK_EXTERN);
-      otherwise exit(TOK_IDENTIFIER)
+      'def': exit(ord(TOK_DEF));
+      'extern': exit(ord(TOK_EXTERN));
+      otherwise exit(ord(TOK_IDENTIFIER));
     end;
   end;
 
@@ -70,34 +72,40 @@ begin
       read(lastChar);
     until ((TCharacter.IsDigit(lastChar) = false) or (lastChar = '.'));
     numVal := StrToFloat(numStr);
-    exit(TOK_NUMBER);
+    exit(ord(TOK_NUMBER));
   end;
 
   // Comment until eol
   if lastChar = '#' then begin
     repeat
       read(lastChar)
-    until (Eof or Eoln);
+    until (Eof or EoLn);
 
     if not Eof then
       exit(gettok);
   end;
 
   if Eof then
-    exit(TOK_EOF);
+    exit(ord(TOK_EOF));
 
-  // Whacha talkin about Willis?
-  exit(TOK_ERROR);
+  // Otherwise just return the
+  // character as it's ascii value
+  thisChar := lastChar;
+  read(lastChar);
+  exit(ord(thisChar));
+
 end; // gettok
 
 (* ******************** *)
 begin // Main
   write(StdErr, 'Ready > ');
-  while token <> TOK_EOF do begin
+  while token <> ord(TOK_EOF) do begin
     token := gettok;
-    writeln;
-    writeln(StdErr, 'The token is: ', token);
-    writeln(StdErr, 'The dentifier is: ', identifierStr);
-    writeln(StdErr, 'The number is: ', numVal);
+    if token <> ord(TOK_BASE) then begin
+      writeln;
+      writeln(StdErr, 'The token is: ', GetEnumName(TypeInfo(TTOKEN), ord(token)));
+      writeln(StdErr, 'The dentifier is: ', identifierStr);
+      writeln(StdErr, 'The number is: ', numVal);
+    end;
   end;
 end. // Main
