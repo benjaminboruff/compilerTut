@@ -31,12 +31,14 @@ function gettok: TToken;
 
 var
   lastChar: char = ' ';
+  numStr: string = '';
 
 begin
   while TCharacter.IsWhiteSpace(lastChar) do begin
     read(lastChar);
   end;
 
+  // identifier: [a-zA-Z][a-zA-Z0-9]*
   if TCharacter.IsLetter(lastChar) then begin
     identifierStr := lastChar;
     read(lastChar);
@@ -52,24 +54,29 @@ begin
     end;
   end;
 
+  // lastChar Number: [0-9.]+
+  if TCharacter.IsDigit(lastChar) then begin
+    repeat
+      numStr := numStr + lastChar;
+      read(lastChar);
+    until ((TCharacter.IsDigit(lastChar) = false) or (lastChar = '.'));
+    numVal := StrToFloat(numStr);
+    exit(TOK_NUMBER);
+  end;
+
   if Eof then
     exit(TOK_EOF);
-
   // Whacha talkin about Willis?
   exit(TOK_ERROR);
 end;
-
 (* ******************** *)
 begin // Main
   write(StdErr, 'Ready > ');
-
   while token <> TOK_EOF do begin
     token := gettok;
-
     writeln;
     writeln(StdErr, 'The token is: ', token);
     writeln(StdErr, 'The dentifier is: ', identifierStr);
     writeln(StdErr, 'The number is: ', numVal);
   end;
-
 end. // Main
