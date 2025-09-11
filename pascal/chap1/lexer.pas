@@ -3,7 +3,11 @@ program Lexer;
 uses
   Character,
   SysUtils;
-
+(* ********************* *)
+// TYPES
+// The lexer returns tokens [0-255]
+// if it is an unknown character, otherwise one
+// of these for known things.
 type
   TToken = (
       // primary
@@ -21,12 +25,16 @@ type
   );
 
 (* ******************** *)
-var // global vars
+// GLOBAL VARS
+var
   identifierStr: string = '';
   numVal: double = 0;
   token: TToken = TOK_BASE;
 
 (* ******************** *)
+// FUNCTIONS
+// gettok - Return the next token
+// from standard input
 function gettok: TToken;
 
 var
@@ -34,6 +42,7 @@ var
   numStr: string = '';
 
 begin
+  // Skip any whitespace
   while TCharacter.IsWhiteSpace(lastChar) do begin
     read(lastChar);
   end;
@@ -64,11 +73,23 @@ begin
     exit(TOK_NUMBER);
   end;
 
+  // Comment until eol
+  if lastChar = '#' then begin
+    repeat
+      read(lastChar)
+    until (Eof or Eoln);
+
+    if not Eof then
+      exit(gettok);
+  end;
+
   if Eof then
     exit(TOK_EOF);
+
   // Whacha talkin about Willis?
   exit(TOK_ERROR);
-end;
+end; // gettok
+
 (* ******************** *)
 begin // Main
   write(StdErr, 'Ready > ');
