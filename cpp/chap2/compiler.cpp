@@ -72,7 +72,7 @@ static int gettok() {
   if (LastChar == EOF)
     return tok_eof;
 
-  // Otherwise just return the character as it's ascii value
+  // Otherwise just return the character as it's decimal ascii value
   int ThisChar = LastChar;
   LastChar = getchar();
   return ThisChar;
