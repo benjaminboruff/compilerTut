@@ -173,7 +173,7 @@ int main() {
   while (token != -1) {
 
     token = gettok();
-
+    fprintf(stderr, "\n");
     fprintf(stderr, "The token is: %d\n", token);
     fprintf(stderr, "The identifier is: %s\n", IdentifierStr.c_str());
     fprintf(stderr, "The NumVal is: %f\n", NumVal);
