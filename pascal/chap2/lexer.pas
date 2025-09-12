@@ -38,8 +38,10 @@ var
 // from standard input
 function gettok: integer;
 
+const
+  lastChar: char = ' '; // like a static function var in c++
+
 var
-  lastChar: char = ' ';
   numStr: string = '';
   thisChar: char = ' ';
 
@@ -103,7 +105,11 @@ begin // Main
     token := gettok;
     if token <> ord(TOK_BASE) then begin
       writeln;
-      writeln(StdErr, 'The token is: ', GetEnumName(TypeInfo(TTOKEN), ord(token)));
+      // check if the token is a valid enum
+      if (token >= ord(low(Ttoken))) and (token <= ord(high(TToken))) then
+        writeln(StdErr, 'The token is: ', GetEnumName(TypeInfo(TToken), ord(token)))
+      else
+        writeln(StdErr, 'The token is: ', token);
       writeln(StdErr, 'The dentifier is: ', identifierStr);
       writeln(StdErr, 'The number is: ', numVal);
     end;
