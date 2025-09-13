@@ -158,6 +158,23 @@ public:
 // Parser
 //===-----------------------------------------------------------===//
 
+/// CurToken/getNextToken - Provide a simple token buffer. CurToken
+/// is the current token the parser is looking at. getNextToken reads
+/// another token from the lexer and updates CutToken with it's results.
+static int CurToken;
+static int getNextToken() { return CurToken = getNextToken(); }
+
+/// LogError* - These are little helper functions for error handling.
+std::unique_ptr<ExprAST> LogError(const char *Str) {
+  fprintf(stderr, "%s\n", Str);
+  return nullptr;
+}
+
+std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
+  LogError(Str);
+  return nullptr;
+}
+
 //===-----------------------------------------------------------===//
 // Top-Level parsing
 //===-----------------------------------------------------------===//
