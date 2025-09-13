@@ -174,27 +174,81 @@ std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
   LogError(Str);
   return nullptr;
 }
+static std::unique_ptr<ExprAST> ParseExpression();
+/// numberexpr ::= number
+static std::unique_ptr<ExprAST> ParseNumberExpression() {
+  auto Result = std::make_unique<NumberExprAST>(NumVal);
+  getNextToken(); // consume the number
+  return std::move(Result);
+}
 
+/// Expression
+/// ::= primary binoprhs
+///
+static std::unique_ptr<ExprAST> ParseExpression() { return nullptr; }
+
+/// toplevelexpr ::= expression
+static std::unique_ptr<FunctionAST> ParseTopLevelExpr() {
+  if (auto E = ParseExpression()) {
+    // make an anonymous proto.
+    auto Proto = std::make_unique<PrototypeAST>("__anon_expr",
+                                                std::vector<std::string>());
+    return std::make_unique<FunctionAST>(std::move(Proto), std::move(E));
+  }
+  return nullptr;
+}
 //===-----------------------------------------------------------===//
 // Top-Level parsing
 //===-----------------------------------------------------------===//
 
+static void HandleTopLevelExpression() {
+  // Evaluate top-level expression into anonymous function.
+  if (ParseTopLevelExpr()) {
+    fprintf(stderr, "Parsed a top-level expression\n");
+  } else {
+    // Skip token for error recovery
+    getNextToken();
+  }
+}
+/// top ::= definition | external | expression | ';'
+static void MainLoop() {
+  while (true) {
+    fprintf(stderr, "ready> ");
+    switch (CurToken) {
+    case tok_eof:
+      return;
+    case ';': // ignore top-level semicolons
+      getNextToken();
+      break;
+    default:
+      HandleTopLevelExpression();
+      break;
+    }
+  }
+}
 //===-----------------------------------------------------------===//
 // Main driver code.
 //===-----------------------------------------------------------===//
 int main() {
-  int token;
+  // int token;
 
+  // fprintf(stderr, "ready> ");
+
+  // while (token != -1) {
+
+  //   token = gettok();
+  //   fprintf(stderr, "\n");
+  //   fprintf(stderr, "The token is: %d\n", token);
+  //   fprintf(stderr, "The identifier is: %s\n", IdentifierStr.c_str());
+  //   fprintf(stderr, "The NumVal is: %f\n", NumVal);
+  // }
+
+  // Prime the first token.
   fprintf(stderr, "ready> ");
+  getNextToken();
 
-  while (token != -1) {
-
-    token = gettok();
-    fprintf(stderr, "\n");
-    fprintf(stderr, "The token is: %d\n", token);
-    fprintf(stderr, "The identifier is: %s\n", IdentifierStr.c_str());
-    fprintf(stderr, "The NumVal is: %f\n", NumVal);
-  }
+  // Run the main "interpreter loop" now.
+  MainLoop();
 
   return 0;
 }
