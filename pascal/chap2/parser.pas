@@ -1,1 +1,4 @@
-program Parser;
+unit parser;
+interface
+implementation
+end.
