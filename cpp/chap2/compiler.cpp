@@ -162,7 +162,7 @@ public:
 /// is the current token the parser is looking at. getNextToken reads
 /// another token from the lexer and updates CutToken with it's results.
 static int CurToken;
-static int getNextToken() { return CurToken = getNextToken(); }
+static int getNextToken() { return CurToken = gettok(); }
 
 /// LogError* - These are little helper functions for error handling.
 std::unique_ptr<ExprAST> LogError(const char *Str) {
@@ -175,6 +175,7 @@ std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
   return nullptr;
 }
 static std::unique_ptr<ExprAST> ParseExpression();
+
 /// numberexpr ::= number
 static std::unique_ptr<ExprAST> ParseNumberExpression() {
   auto Result = std::make_unique<NumberExprAST>(NumVal);
@@ -185,7 +186,9 @@ static std::unique_ptr<ExprAST> ParseNumberExpression() {
 /// Expression
 /// ::= primary binoprhs
 ///
-static std::unique_ptr<ExprAST> ParseExpression() { return nullptr; }
+static std::unique_ptr<ExprAST> ParseExpression() {
+  return ParseNumberExpression();
+}
 
 /// toplevelexpr ::= expression
 static std::unique_ptr<FunctionAST> ParseTopLevelExpr() {
